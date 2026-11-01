@@ -8,7 +8,7 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500&family=Spectral:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=2">
+<link rel="stylesheet" href="assets/css/style.css?v=4">
 </head>
 <body data-page="home">
 <div data-header></div>
@@ -16,21 +16,24 @@
 <main>
   <section class="hero wrap grid">
     <div class="hero__text">
-      <h1 class="display" data-fade>Проектируем и строим <span class="it">интерьеры</span>, в&nbsp;которых хочется жить</h1>
-      <div style="display:grid;gap:28px" data-fade>
+      <h1 class="display" data-lines>Проектируем и строим <span class="it">интерьеры</span>, в&nbsp;которых хочется жить</h1>
+      <div class="hero__bottom" data-fade>
         <p class="lead">Архитектура, дизайн, ремонт и авторский надзор — в одних руках, от замера до последней лампы.</p>
         <div class="hero__actions">
           <a class="btn" href="projects.html">Смотреть проекты</a>
           <a class="btn btn--ghost" href="services.html#calc">Рассчитать стоимость</a>
         </div>
+        <div class="thumbs" id="thumbs" role="tablist" aria-label="Проекты на первом экране"></div>
       </div>
     </div>
     <div class="hero__main">
-      <a href="project.html?p=silk-road-lounge" class="card">
-        <div class="ph ph--4x5" data-reveal style="view-transition-name:p-silk-road-lounge"><img src="assets/img/p03.jpg" alt="Silk Road Lounge"></div>
-      </a>
-      <div class="hero__small"><div class="ph ph--1x1" data-reveal><img src="assets/img/p01.jpg" alt="Travertine Suite"></div></div>
-      <div class="hero__meta label"><span>Silk Road Lounge</span><span>Гостиная, 2026</span></div>
+      <a class="slides" id="slides" href="projects.html" aria-live="polite"></a>
+      <div class="slides__bar">
+        <span class="slides__count"><b id="slideIdx">01</b> / <span id="slideTotal">05</span></span>
+        <span class="slides__name" id="slideName"></span>
+        <span class="slides__nav"><button type="button" id="slidePrev" aria-label="Предыдущий">←</button><button type="button" id="slideNext" aria-label="Следующий">→</button></span>
+      </div>
+      <div class="slides__progress"><i id="slideProgress"></i></div>
     </div>
   </section>
 
@@ -43,19 +46,36 @@
     </div>
   </section>
 
+  <div class="marquee" aria-hidden="true"><div class="marquee__track" id="marquee"></div></div>
+
   <section class="section wrap">
     <div class="sec-head">
-      <h2 class="h2" data-fade>Избранные <span class="it">проекты</span></h2>
-      <a class="arrow" href="projects.html">Все проекты (<span id="allCount">12</span>)</a>
+      <h2 class="h2" data-lines>Избранные <span class="it">проекты</span></h2>
+      <a class="arrow" href="projects.html" id="allCount">Все проекты (12)</a>
     </div>
     <div class="featured grid" id="featured"></div>
+  </section>
+
+  <section class="index-sec">
+    <div class="wrap">
+      <div class="sec-head"><h2 class="h2" data-lines>Индекс <span class="it">работ</span></h2><span class="label" id="indexMeta"></span></div>
+      <div class="index" id="index"></div>
+    </div>
+  </section>
+
+  <section class="section wrap grid mats">
+    <div class="mats__head">
+      <h2 class="h2" data-lines>Материалы, с&nbsp;которыми <span class="it">мы работаем</span></h2>
+      <p class="lead" data-fade>Наведите на материал — покажем, где он уже живёт. Нажмите — откроем эти проекты.</p>
+    </div>
+    <div class="mats__list" id="mats"></div>
   </section>
 
   <section class="section wrap grid founder">
     <div class="founder__img" style="max-width:240px"><div class="ph ph--1x1" data-reveal><img src="assets/img/owner.jpg" alt="Умар Рахимов"></div></div>
     <div class="founder__text">
       <p class="label" data-fade>Основатель и главный архитектор</p>
-      <h2 class="h2" data-fade>Умар Рахимов</h2>
+      <h2 class="h2" data-lines>Умар Рахимов</h2>
       <p class="lead" data-fade>Ведёт каждый проект лично — от первой встречи до сдачи объекта.</p>
       <div class="facts" data-fade>
         <div><b>518 тыс.</b><span>подписчиков в Instagram</span></div>
@@ -66,7 +86,7 @@
   </section>
 
   <section class="section wrap">
-    <div class="sec-head"><h2 class="h2" data-fade>Как мы <span class="it">работаем</span></h2><a class="arrow" href="services.html">Услуги и цены</a></div>
+    <div class="sec-head"><h2 class="h2" data-lines>Как мы <span class="it">работаем</span></h2><a class="arrow" href="services.html">Услуги и цены</a></div>
     <div class="steps">
       <div class="step" data-fade><b>Знакомство и замер</b><span>Обсуждаем задачу, бюджет и сроки, выезжаем на объект.</span></div>
       <div class="step" data-fade><b>Планировка и концепция</b><span>Несколько вариантов планировки и стиль будущего интерьера.</span></div>
@@ -86,8 +106,9 @@
   </section>
 </main>
 
+<div class="peek" id="peek" aria-hidden="true"><div class="ph ph--4x5"><img alt=""></div></div>
 <div data-footer></div>
-<script src="assets/js/data.js?v=2"></script>
-<script src="assets/js/site.js?v=2"></script>
+<script src="assets/js/data.js?v=4"></script>
+<script src="assets/js/site.js?v=4"></script>
 </body>
 </html>

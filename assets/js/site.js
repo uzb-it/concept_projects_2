@@ -17,6 +17,20 @@
     <path d="M-42.53 -34.33L-14 -50.81L23 -29.44L23 -16.74L-14 -38.11L-51 -16.74L-51 -19.67Z"/><path d="M8.47 -54L37 -37.53L37 5.2L26 11.55L26 -31.18L-11 -52.54L-8.47 -54Z"/>
   </symbol></svg>`);
 
+  /* ---------------- intro (home, once per visit): the six blades assemble, then open ---------------- */
+  let seen = true;
+  try { seen = !!sessionStorage.getItem('cp2-intro'); sessionStorage.setItem('cp2-intro', 1); } catch (e) {}
+  if (page === 'home' && !seen && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const blades = $$('#mark path').map((p, i) => {
+      const a = (i * 60 + 30) * Math.PI / 180; // each blade flies in from its own side
+      return `<path d="${p.getAttribute('d')}" style="--i:${i};--dx:${Math.round(Math.cos(a) * 60)}px;--dy:${Math.round(Math.sin(a) * 60)}px"/>`;
+    }).join('');
+    document.body.insertAdjacentHTML('beforeend', `<div class="intro" aria-hidden="true"><svg viewBox="-56 -56 112 112">${blades}</svg><div class="intro__word">Concept Projects</div></div>`);
+    const intro = $('.intro');
+    setTimeout(() => intro.classList.add('is-open'), 1300);
+    setTimeout(() => intro.remove(), 2700);
+  }
+
   /* ---------------- header, menu, footer ---------------- */
   const NAV = [['projects', 'projects.html', 'Проекты'], ['studio', 'studio.html', 'Студия'], ['services', 'services.html', 'Услуги и цены'], ['contacts', 'contacts.html', 'Контакты']];
   const navLinks = NAV.map(([k, href, t]) => `<a href="${href}"${k === page || (k === 'projects' && page === 'project') ? ' aria-current="page"' : ''}>${t}</a>`).join('');
@@ -40,6 +54,7 @@
 
   const foot = $('[data-footer]');
   if (foot) foot.outerHTML = `
+    <a class="wordmark" href="index.html" aria-label="Concept Projects"><svg><use href="#mark"/></svg><span>Concept Projects</span></a>
     <footer class="footer">
       <div class="footer__brand"><a class="brand" href="index.html"><svg><use href="#mark"/></svg>Concept Projects</a>
         <p>Архитектура, дизайн интерьера, ремонт и авторский надзор. ${SITE.city}.</p></div>
@@ -63,16 +78,95 @@
   const byslug = Object.fromEntries(PROJECTS.map(p => [p.slug, p]));
   const img = p => `assets/img/${p.img}.jpg`;
   const card = (p, ratio = '4x5') => `
-    <a class="card" href="project.html?p=${p.slug}" data-cat="${esc(p.cat)}">
-      <div class="ph ph--${ratio}" data-reveal style="view-transition-name:p-${p.slug}"><img src="${img(p)}" alt="${esc(p.name)}" loading="lazy"></div>
+    <a class="card" href="project.html?p=${p.slug}" data-cat="${esc(p.cat)}" data-mat="${esc(p.mat.join('|'))}">
+      <div class="ph ph--${ratio}" data-reveal data-parallax style="view-transition-name:p-${p.slug}"><img src="${img(p)}" alt="${esc(p.name)}" loading="lazy"></div>
       <div class="card__cap"><span class="card__name">${esc(p.name)}</span><span class="card__meta">${esc(p.cat)} · ${p.year}</span></div>
     </a>`;
   const fill = (sel, html) => { const el = $(sel); if (el) el.innerHTML = html; return el; };
+  const pad2 = n => String(n).padStart(2, '0');
+  // floating photo preview that follows the pointer (lists on home and projects)
+  function bindPeek(items) {
+    const peek = $('#peek'); if (!peek || matchMedia('(hover: none)').matches) return;
+    const peekImg = $('img', peek);
+    items.forEach(r => {
+      r.addEventListener('pointerenter', () => { peekImg.src = r.dataset.img; peek.classList.add('is-on'); });
+      r.addEventListener('pointerleave', () => peek.classList.remove('is-on'));
+    });
+    addEventListener('pointermove', e => { peek.style.left = e.clientX + 'px'; peek.style.top = e.clientY + 'px'; }, { passive: true });
+  }
+  // how many projects use each material, most used first
+  const matCount = {};
+  PROJECTS.forEach(p => p.mat.forEach(m => { matCount[m] = (matCount[m] || 0) + 1; }));
+  const MATS = Object.keys(matCount).sort((a, b) => matCount[b] - matCount[a] || a.localeCompare(b, 'ru'));
 
   /* ---------------- pages ---------------- */
   if (page === 'home') {
+    // slideshow hero
+    const SHOW = ['silk-road-lounge', 'terracotta-master', 'grand-dining', 'travertine-suite', 'inomarka-hayda'].map(s => byslug[s]);
+    const slides = $('#slides'), progress = $('#slideProgress');
+    slides.innerHTML = SHOW.map((p, k) => `<div class="slide${k ? '' : ' is-on'}"><img src="${img(p)}" alt="${esc(p.name)}"${k ? ' loading="lazy"' : ''}></div>`).join('');
+    fill('#thumbs', SHOW.map((p, k) => `<button type="button" role="tab" aria-label="${esc(p.name)}" style="background-image:url(${img(p)})"${k ? '' : ' class="is-on"'}></button>`).join(''));
+    $('#slideTotal').textContent = pad2(SHOW.length);
+    const DUR = 6000;
+    let cur = 0, t0 = performance.now();
+    const go = k => {
+      const els = $$('.slide', slides);
+      els.forEach(e => e.classList.remove('was-on'));
+      els[cur].classList.replace('is-on', 'was-on');
+      cur = (k + SHOW.length) % SHOW.length;
+      els[cur].classList.add('is-on');
+      $$('#thumbs button').forEach((b, j) => b.classList.toggle('is-on', j === cur));
+      $('#slideIdx').textContent = pad2(cur + 1);
+      $('#slideName').textContent = `${SHOW[cur].name} — ${SHOW[cur].cat.toLowerCase()}, ${SHOW[cur].year}`;
+      slides.href = `project.html?p=${SHOW[cur].slug}`;
+      t0 = performance.now();
+    };
+    $('#slideName').textContent = `${SHOW[0].name} — ${SHOW[0].cat.toLowerCase()}, ${SHOW[0].year}`;
+    slides.href = `project.html?p=${SHOW[0].slug}`;
+    $('#slidePrev').addEventListener('click', () => go(cur - 1));
+    $('#slideNext').addEventListener('click', () => go(cur + 1));
+    $('#thumbs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go($$('#thumbs button').indexOf(b)); });
+    let paused = false;
+    $('.hero__main').addEventListener('pointerenter', () => { paused = true; });
+    $('.hero__main').addEventListener('pointerleave', () => { paused = false; t0 = performance.now() - parseFloat(progress.dataset.p || 0) * DUR; });
+    (function tick(now) {
+      requestAnimationFrame(tick);
+      if (paused || document.hidden) return;
+      const p = Math.min(1, (now - t0) / DUR);
+      progress.style.transform = `scaleX(${p})`; progress.dataset.p = p;
+      if (p >= 1) go(cur + 1);
+    })(performance.now());
+
+    // marquee of materials; scrolling speeds it up
+    const mq = $('#marquee');
+    const run = MATS.slice(0, 10).map(m => `<span>${esc(m)}</span><svg><use href="#mark"/></svg>`).join('');
+    mq.innerHTML = run + run;
+    let mx = 0, boost = 0, lastSY = scrollY;
+    (function loop() {
+      requestAnimationFrame(loop);
+      const dy = scrollY - lastSY; lastSY = scrollY;
+      boost += (Math.min(30, Math.abs(dy)) - boost) * .08;
+      mx -= .6 + boost * .5;
+      const half = mq.scrollWidth / 2;
+      if (half && -mx > half) mx += half;
+      mq.style.transform = `translate3d(${mx}px,0,0)`;
+    })();
+
     fill('#featured', ['terracotta-master', 'grand-dining', 'bordeaux-room', 'verde-marble'].map(s => card(byslug[s])).join(''));
-    $('#allCount').textContent = PROJECTS.length;
+    $('#allCount').textContent = `Все проекты (${PROJECTS.length})`;
+
+    // dark index of every project
+    $('#indexMeta').textContent = `${PROJECTS.length} проектов · ${new Set(PROJECTS.map(p => p.cat)).size} типов помещений`;
+    fill('#index', PROJECTS.map((p, k) => `<a class="idx" href="project.html?p=${p.slug}" data-img="${img(p)}" data-fade>
+      <em>${pad2(k + 1)}</em><b>${esc(p.name)}</b><span>${esc(p.cat)}</span><i>${p.year}</i></a>`).join(''));
+    bindPeek($$('.idx'));
+
+    // materials library: real counts from the projects; hover shows where it is used
+    fill('#mats', MATS.map(m => {
+      const first = PROJECTS.find(p => p.mat.includes(m));
+      return `<a class="mat" href="projects.html?mat=${encodeURIComponent(m)}" data-img="${img(first)}">${esc(m)}<sup>${matCount[m]}</sup></a>`;
+    }).join(''));
+    bindPeek($$('.mat'));
   }
 
   if (page === 'projects') {
@@ -85,6 +179,7 @@
     fill('#chips', [`<button class="chip is-on" data-cat="">Все<sup>${PROJECTS.length}</sup></button>`]
       .concat(cats.map(c => `<button class="chip" data-cat="${esc(c)}">${esc(c)}<sup>${count(c)}</sup></button>`)).join(''));
     const apply = cat => {
+      const mc = $('[data-mat-chip]'); if (mc) mc.remove();
       $$('.chip').forEach(b => b.classList.toggle('is-on', b.dataset.cat === cat));
       $$('.card, .row', wrap).forEach(el => el.classList.toggle('is-out', !!cat && el.dataset.cat !== cat));
       reveal(); // newly shown cards
@@ -96,13 +191,15 @@
       try { localStorage.setItem('cp2-view', b.dataset.view); } catch (e) {}
     }));
     try { if (localStorage.getItem('cp2-view') === 'list') $('.views [data-view=list]').click(); } catch (e) {}
-    // list view: photo follows the pointer
-    const peek = $('#peek'), peekImg = $('img', peek);
-    $$('.row').forEach(r => {
-      r.addEventListener('pointerenter', () => { peekImg.src = r.dataset.img; peek.classList.add('is-on'); });
-      r.addEventListener('pointerleave', () => peek.classList.remove('is-on'));
-    });
-    addEventListener('pointermove', e => { peek.style.left = e.clientX + 'px'; peek.style.top = e.clientY + 'px'; }, { passive: true });
+    bindPeek($$('.row'));
+    // ?mat=… (from the materials library on the home page)
+    const mat = new URLSearchParams(location.search).get('mat');
+    if (mat && matCount[mat]) {
+      $('#chips').insertAdjacentHTML('beforeend', `<button class="chip is-on" data-mat-chip>${esc(mat)} ×</button>`);
+      $$('.chip:not([data-mat-chip])').forEach(b => b.classList.remove('is-on'));
+      $$('.card, .row', wrap).forEach(el => el.classList.toggle('is-out', !PROJECTS.find(p => el.getAttribute('href').endsWith('=' + p.slug)).mat.includes(mat)));
+      $('[data-mat-chip]').addEventListener('click', e => { e.stopPropagation(); history.replaceState(null, '', 'projects.html'); e.target.remove(); apply(''); });
+    }
   }
 
   if (page === 'project') {
@@ -125,6 +222,31 @@
     const CROPS = [['22% 30%', 2.1], ['78% 58%', 2.4], ['46% 90%', 2]];
     fill('#details', CROPS.map(([o, z], k) => `<figure><div class="ph ph--${k === 1 ? '3x4' : '1x1'}" data-reveal style="--o:${o};--z:${z}"><img src="${img(p)}" alt="${esc(p.name)} — деталь ${k + 1}" loading="lazy"></div>
       <figcaption>Деталь ${String(k + 1).padStart(2, '0')}</figcaption></figure>`).join(''));
+    fill('#bandImg', `<img src="${img(p)}" alt="" loading="lazy" style="object-position:50% 40%">`);
+    // palette: k-means on a small copy of the photo, darkest to lightest
+    const pi = new Image();
+    pi.onload = () => {
+      const c = document.createElement('canvas'), w = 48, h = 60; c.width = w; c.height = h;
+      const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(pi, 0, 0, w, h);
+      const d = x.getImageData(0, 0, w, h).data, px = [];
+      for (let k = 0; k < d.length; k += 4) px.push([d[k], d[k + 1], d[k + 2]]);
+      let cents = Array.from({ length: 6 }, (_, k) => px[Math.floor((k + .5) / 6 * px.length)].slice()), counts = [];
+      for (let it = 0; it < 10; it++) {
+        const sum = cents.map(() => [0, 0, 0]); counts = cents.map(() => 0);
+        for (const q of px) {
+          let best = 0, bd = Infinity;
+          cents.forEach((cc, j) => { const dd = (q[0] - cc[0]) ** 2 + (q[1] - cc[1]) ** 2 + (q[2] - cc[2]) ** 2; if (dd < bd) { bd = dd; best = j; } });
+          sum[best][0] += q[0]; sum[best][1] += q[1]; sum[best][2] += q[2]; counts[best]++;
+        }
+        cents = cents.map((cc, j) => counts[j] ? sum[j].map(v => v / counts[j]) : cc);
+      }
+      const hex = rgb => '#' + rgb.map(v => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase();
+      fill('#palette', cents.map((cc, j) => ({ cc, share: counts[j] / px.length })).filter(s => s.share > .02)
+        .sort((a, b) => (a.cc[0] + a.cc[1] + a.cc[2]) - (b.cc[0] + b.cc[1] + b.cc[2]))
+        .map(s => `<div class="swatch${(s.cc[0] * .299 + s.cc[1] * .587 + s.cc[2] * .114) > 150 ? ' light' : ''}" style="--c:${hex(s.cc)};flex-grow:${(s.share * 100).toFixed(1)}">
+          <span>${hex(s.cc)}</span><small>${Math.round(s.share * 100)}%</small></div>`).join(''));
+    };
+    pi.src = img(p);
     fill('#pager', `<a href="project.html?p=${prev.slug}"><span class="label">← Предыдущий</span><b>${esc(prev.name)}</b></a>
       <a href="project.html?p=${next.slug}"><span class="label">Следующий →</span><b>${esc(next.name)}</b></a>`);
     // lightbox
@@ -192,6 +314,42 @@
   const io = 'IntersectionObserver' in window && new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
   }), { rootMargin: '0px 0px -8% 0px' });
-  function reveal() { $$('[data-reveal]:not(.is-in), [data-fade]:not(.is-in)').forEach(el => io ? io.observe(el) : el.classList.add('is-in')); }
-  reveal();
+  function reveal() { $$('[data-reveal]:not(.is-in), [data-fade]:not(.is-in), [data-lines]:not(.is-in)').forEach(el => io ? io.observe(el) : el.classList.add('is-in')); }
+
+  // headings: wrap each word so lines can rise from below (keeps inner <span class="it">)
+  let wi = 0;
+  const splitWords = node => [...node.childNodes].forEach(n => {
+    if (n.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.append(part); return; }
+        const w = document.createElement('span'); w.className = 'w';
+        w.innerHTML = `<span style="--i:${wi++}"></span>`; w.firstChild.textContent = part;
+        frag.append(w);
+      });
+      n.replaceWith(frag);
+    } else if (n.nodeType === 1 && !n.classList.contains('w')) splitWords(n);
+  });
+  $$('[data-lines]').forEach(h => { wi = 0; splitWords(h); });
+
+  // parallax: photos drift a little against the scroll
+  const par = $$('[data-parallax]');
+  if (par.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const upd = () => {
+      const H = innerHeight;
+      par.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > H) return;
+        const k = ((r.top + r.height / 2) - H / 2) / (H / 2 + r.height / 2); // -1 … 1
+        el.style.setProperty('--py', (-k * r.height * .07).toFixed(1) + 'px');
+      });
+    };
+    let raf = 0;
+    addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; upd(); }); }, { passive: true });
+    addEventListener('resize', upd); upd();
+  }
+
+  // wait for the intro to open before playing the first reveals
+  setTimeout(reveal, $('.intro') ? 1500 : 0);
 })();
