@@ -25,10 +25,12 @@
       const a = (i * 60 + 30) * Math.PI / 180; // each blade flies in from its own side
       return `<path d="${p.getAttribute('d')}" style="--i:${i};--dx:${Math.round(Math.cos(a) * 60)}px;--dy:${Math.round(Math.sin(a) * 60)}px"/>`;
     }).join('');
-    document.body.insertAdjacentHTML('beforeend', `<div class="intro" aria-hidden="true"><svg viewBox="-56 -56 112 112">${blades}</svg><div class="intro__word">Concept Projects</div></div>`);
-    const intro = $('.intro');
-    setTimeout(() => intro.classList.add('is-open'), 1300);
-    setTimeout(() => intro.remove(), 2700);
+    document.body.insertAdjacentHTML('beforeend', `<div class="splash" aria-hidden="true"><svg viewBox="-56 -56 112 112">${blades}</svg><div class="splash__word">Concept Projects</div></div>`);
+    // the sequence is pure CSS; when the aperture finishes, drop the overlay and start the reveals
+    const intro = $('.splash');
+    const done = () => { if (!intro.isConnected) return; intro.remove(); reveal(); };
+    intro.addEventListener('animationend', e => { if (e.animationName === 'intro-open') done(); });
+    setTimeout(done, 3200); // backup
   }
 
   /* ---------------- header, menu, footer ---------------- */
@@ -66,11 +68,15 @@
 
   // header: hide on scroll down, show on scroll up
   const header = $('.header');
+  const setHH = () => document.documentElement.style.setProperty('--hh', header.offsetHeight + 'px');
+  setHH(); addEventListener('resize', setHH);
   let lastY = scrollY;
   addEventListener('scroll', () => {
     const y = scrollY;
     header.classList.toggle('is-scrolled', y > 10);
-    header.classList.toggle('is-hidden', y > 300 && y > lastY && !document.body.classList.contains('menu-open'));
+    const hide = y > 300 && y > lastY && !document.body.classList.contains('menu-open');
+    header.classList.toggle('is-hidden', hide);
+    document.body.classList.toggle('header-hidden', hide);
     lastY = y;
   }, { passive: true });
 
@@ -79,20 +85,24 @@
   const img = p => `assets/img/${p.img}.jpg`;
   const card = (p, ratio = '4x5') => `
     <a class="card" href="project.html?p=${p.slug}" data-cat="${esc(p.cat)}" data-mat="${esc(p.mat.join('|'))}">
-      <div class="ph ph--${ratio}" data-reveal data-parallax style="view-transition-name:p-${p.slug}"><img src="${img(p)}" alt="${esc(p.name)}" loading="lazy"></div>
+      <div class="ph ph--${ratio}" data-reveal data-parallax><img src="${img(p)}" alt="${esc(p.name)}" loading="lazy"></div>
       <div class="card__cap"><span class="card__name">${esc(p.name)}</span><span class="card__meta">${esc(p.cat)} · ${p.year}</span></div>
     </a>`;
   const fill = (sel, html) => { const el = $(sel); if (el) el.innerHTML = html; return el; };
   const pad2 = n => String(n).padStart(2, '0');
   // floating photo preview that follows the pointer (lists on home and projects)
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let peekBound = false;
   function bindPeek(items) {
-    const peek = $('#peek'); if (!peek || matchMedia('(hover: none)').matches) return;
+    const peek = $('#peek'); if (!peek || !finePointer) return;
     const peekImg = $('img', peek);
     items.forEach(r => {
       r.addEventListener('pointerenter', () => { peekImg.src = r.dataset.img; peek.classList.add('is-on'); });
       r.addEventListener('pointerleave', () => peek.classList.remove('is-on'));
     });
-    addEventListener('pointermove', e => { peek.style.left = e.clientX + 'px'; peek.style.top = e.clientY + 'px'; }, { passive: true });
+    if (peekBound) return;
+    peekBound = true;
+    addEventListener('pointermove', e => { peek.style.transform = `translate3d(${e.clientX}px,${e.clientY}px,0) translate(-50%,-50%)`; }, { passive: true });
   }
   // how many projects use each material, most used first
   const matCount = {};
@@ -123,41 +133,52 @@
     };
     $('#slideName').textContent = `${SHOW[0].name} — ${SHOW[0].cat.toLowerCase()}, ${SHOW[0].year}`;
     slides.href = `project.html?p=${SHOW[0].slug}`;
-    $('#slidePrev').addEventListener('click', () => go(cur - 1));
-    $('#slideNext').addEventListener('click', () => go(cur + 1));
-    $('#thumbs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go($$('#thumbs button').indexOf(b)); });
-    let paused = false;
-    $('.hero__main').addEventListener('pointerenter', () => { paused = true; });
-    $('.hero__main').addEventListener('pointerleave', () => { paused = false; t0 = performance.now() - parseFloat(progress.dataset.p || 0) * DUR; });
+    $('#thumbs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) goAndReset($$('#thumbs button').indexOf(b)); });
+    // timer: pauses while a mouse hovers the photo, while the tab is hidden and while the hero is off screen
+    let hover = false, heroOn = true, elapsed = 0, last = performance.now();
+    const heroMain = $('.hero__main');
+    heroMain.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
+    heroMain.addEventListener('pointerleave', () => { hover = false; });
+    const goAndReset = k => { go(k); elapsed = 0; };
+    $('#slidePrev').onclick = () => goAndReset(cur - 1);
+    $('#slideNext').onclick = () => goAndReset(cur + 1);
     (function tick(now) {
       requestAnimationFrame(tick);
-      if (paused || document.hidden) return;
-      const p = Math.min(1, (now - t0) / DUR);
-      progress.style.transform = `scaleX(${p})`; progress.dataset.p = p;
-      if (p >= 1) go(cur + 1);
-    })(performance.now());
+      const dt = Math.min(100, now - last); last = now;
+      if (hover || !heroOn || document.hidden) return;
+      elapsed += dt;
+      const p = Math.min(1, elapsed / DUR);
+      progress.style.transform = `scaleX(${p})`;
+      if (p >= 1) goAndReset(cur + 1);
+    })(last);
+    new IntersectionObserver(([e]) => { heroOn = e.isIntersecting; }).observe(heroMain);
 
-    // marquee of materials; scrolling speeds it up
-    const mq = $('#marquee');
+    // marquee of materials: runs only while visible, speeds up with scrolling
+    const mq = $('#marquee'), mqBox = $('.marquee');
     const run = MATS.slice(0, 10).map(m => `<span>${esc(m)}</span><svg><use href="#mark"/></svg>`).join('');
     mq.innerHTML = run + run;
-    let mx = 0, boost = 0, lastSY = scrollY;
-    (function loop() {
+    let mx = 0, boost = 0, lastSY = scrollY, half = 0, mqOn = false, mLast = performance.now();
+    const measure = () => { half = mq.scrollWidth / 2; };
+    measure(); addEventListener('resize', measure);
+    if (document.fonts) document.fonts.ready.then(measure);
+    new IntersectionObserver(([e]) => { mqOn = e.isIntersecting; }).observe(mqBox);
+    (function loop(now) {
       requestAnimationFrame(loop);
+      const dt = Math.min(64, now - mLast) / 16.67; mLast = now;
+      if (!mqOn) return;
       const dy = scrollY - lastSY; lastSY = scrollY;
       boost += (Math.min(30, Math.abs(dy)) - boost) * .08;
-      mx -= .6 + boost * .5;
-      const half = mq.scrollWidth / 2;
+      mx -= (.6 + boost * .5) * dt;
       if (half && -mx > half) mx += half;
-      mq.style.transform = `translate3d(${mx}px,0,0)`;
-    })();
+      mq.style.transform = `translate3d(${mx.toFixed(1)}px,0,0)`;
+    })(mLast);
 
     fill('#featured', ['terracotta-master', 'grand-dining', 'bordeaux-room', 'verde-marble'].map(s => card(byslug[s])).join(''));
     $('#allCount').textContent = `Все проекты (${PROJECTS.length})`;
 
     // dark index of every project
     $('#indexMeta').textContent = `${PROJECTS.length} проектов · ${new Set(PROJECTS.map(p => p.cat)).size} типов помещений`;
-    fill('#index', PROJECTS.map((p, k) => `<a class="idx" href="project.html?p=${p.slug}" data-img="${img(p)}" data-fade>
+    fill('#index', PROJECTS.map((p, k) => `<a class="idx" href="project.html?p=${p.slug}" data-img="${img(p)}">
       <em>${pad2(k + 1)}</em><b>${esc(p.name)}</b><span>${esc(p.cat)}</span><i>${p.year}</i></a>`).join(''));
     bindPeek($$('.idx'));
 
@@ -211,7 +232,6 @@
     $('#title').textContent = p.name;
     $('#cat').textContent = `${p.cat}, ${p.year}`;
     const hero = $('#heroImg');
-    hero.style.viewTransitionName = 'p-' + p.slug;
     hero.innerHTML = `<img src="${img(p)}" alt="${esc(p.name)}">`;
     const specs = [['Помещение', p.cat], ['Год', p.year], p.area && ['Площадь', p.area + ' м²'], p.term && ['Срок', p.term],
       ['Материалы', p.mat.length + ' позиций'], ['Проект', `${String(i + 1).padStart(2, '0')} из ${PROJECTS.length}`]].filter(Boolean);
@@ -310,11 +330,30 @@
     });
   }
 
-  /* ---------------- reveal on scroll ---------------- */
-  const io = 'IntersectionObserver' in window && new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
-  }), { rootMargin: '0px 0px -8% 0px' });
-  function reveal() { $$('[data-reveal]:not(.is-in), [data-fade]:not(.is-in), [data-lines]:not(.is-in)').forEach(el => io ? io.observe(el) : el.classList.add('is-in')); }
+  /* ---------------- reveal on scroll ----------------
+     Elements start hidden only for the first viewing. IntersectionObserver plays them in;
+     a scroll check backs it up (bottom of the page, fast flicks, filters), so nothing stays hidden. */
+  const pending = new Set();
+  const show = el => { el.classList.add('is-in'); pending.delete(el); if (io) io.unobserve(el); };
+  const io = 'IntersectionObserver' in window && new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) show(e.target); }), { rootMargin: '0px 0px -4% 0px' });
+  function sweep() {
+    const H = innerHeight, atEnd = scrollY + H >= document.documentElement.scrollHeight - 4;
+    pending.forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (atEnd || r.top < H) show(el); // anything already on or above the screen
+    });
+  }
+  function reveal() {
+    $$('[data-reveal]:not(.is-in), [data-fade]:not(.is-in), [data-lines]:not(.is-in)').forEach(el => {
+      if (pending.has(el)) return;
+      pending.add(el);
+      if (io) io.observe(el);
+    });
+    sweep();
+  }
+  // cheap while anything is pending, free once everything has been shown
+  addEventListener('scroll', () => { if (pending.size) sweep(); }, { passive: true });
+  addEventListener('resize', () => pending.size && sweep());
 
   // headings: wrap each word so lines can rise from below (keeps inner <span class="it">)
   let wi = 0;
@@ -333,23 +372,28 @@
   });
   $$('[data-lines]').forEach(h => { wi = 0; splitWords(h); });
 
-  // parallax: photos drift a little against the scroll
+  // parallax: desktop with a mouse only (on touch screens it fights native scrolling); visible photos only
   const par = $$('[data-parallax]');
-  if (par.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (par.length && finePointer && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const live = new Set();
+    const pio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? live.add(e.target) : live.delete(e.target)));
+    par.forEach(el => pio.observe(el));
     const upd = () => {
       const H = innerHeight;
-      par.forEach(el => {
+      live.forEach(el => {
         const r = el.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > H) return;
         const k = ((r.top + r.height / 2) - H / 2) / (H / 2 + r.height / 2); // -1 … 1
         el.style.setProperty('--py', (-k * r.height * .07).toFixed(1) + 'px');
       });
     };
     let raf = 0;
     addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; upd(); }); }, { passive: true });
-    addEventListener('resize', upd); upd();
+    addEventListener('resize', upd);
+  } else {
+    par.forEach(el => el.removeAttribute('data-parallax')); // full-size photo, no extra crop
   }
 
-  // wait for the intro to open before playing the first reveals
-  setTimeout(reveal, $('.intro') ? 1500 : 0);
+  window.CP_READY = true;
+  // run right away (timers can be throttled in background tabs); with the intro, wait until it opens
+  if (!$('.splash')) reveal();
 })();
