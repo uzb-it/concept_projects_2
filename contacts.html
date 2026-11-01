@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Контакты — Concept Projects</title>
+<meta name="description" content="Связаться с Concept Projects: телефон, Telegram, Instagram.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500&family=Spectral:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
+</head>
+<body data-page="contacts">
+<div data-header></div>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="crumbs"><a href="index.html">Главная</a><span>/</span><span>Контакты</span></div>
+    <h1 class="display" data-fade>Давайте <span class="it">поговорим</span></h1>
+  </section>
+
+  <section class="grid contact">
+    <div class="contact__info">
+      <div class="field"><span class="label">Телефон</span><div id="phones"></div></div>
+      <div class="field"><span class="label">Мессенджер и соцсети</span>
+        <a class="big" href="https://t.me/concept_projects" target="_blank" rel="noopener">Telegram ↗</a>
+        <a class="big" href="https://www.instagram.com/concept_projects_/" target="_blank" rel="noopener">Instagram ↗</a>
+      </div>
+      <div class="field"><span class="label">Город</span><p class="h3">Ташкент, Узбекистан</p></div>
+    </div>
+
+    <form class="contact__form" id="form" novalidate>
+      <p class="h3">Заявка на проект</p>
+      <div class="field--two">
+        <div class="field"><label for="f-name">Имя</label><input class="input" id="f-name" name="name" autocomplete="name"><span class="err" data-err="name"></span></div>
+        <div class="field"><label for="f-phone">Телефон</label><input class="input" id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="+998"><span class="err" data-err="phone"></span></div>
+      </div>
+      <div class="field"><span class="label">Что нужно</span><div class="seg" id="need" role="group" aria-label="Формат работы"></div></div>
+      <div class="field"><label for="f-area">Площадь, м²</label><input class="input" id="f-area" name="area" inputmode="numeric" placeholder="120"></div>
+      <div class="field"><label for="f-msg">Пара слов об объекте</label><textarea class="input" id="f-msg" name="msg" placeholder="Квартира в новостройке, хотим светлый интерьер"></textarea></div>
+      <div><button class="btn" type="submit">Отправить заявку</button></div>
+      <p class="form-msg" id="formMsg" aria-live="polite"></p>
+    </form>
+  </section>
+</main>
+
+<div style="height:clamp(80px,10vw,160px)"></div>
+<div data-footer></div>
+<script src="assets/js/data.js?v=2"></script>
+<script src="assets/js/site.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Услуги и цены — Concept Projects</title>
+<meta name="description" content="Дизайн-проект, ремонт и интерьер под ключ. Калькулятор стоимости.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500&family=Spectral:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
+</head>
+<body data-page="services">
+<div data-header></div>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="crumbs"><a href="index.html">Главная</a><span>/</span><span>Услуги и цены</span></div>
+    <div class="page-head__row">
+      <h1 class="display" data-fade>Услуги <span class="it">и цены</span></h1>
+      <p class="lead" data-fade>Три формата работы. Выберите, сколько вы хотите доверить нам, — остальное возьмём на себя.</p>
+    </div>
+  </section>
+
+  <section class="packages">
+    <article class="pkg" data-fade>
+      <p class="pkg__name">Дизайн-проект</p>
+      <p class="muted pkg__for">Если ремонт делает ваша бригада</p>
+      <ul><li>Обмеры и планировочные решения</li><li>3D-визуализации всех помещений</li><li>Рабочие чертежи для строителей</li><li>Ведомость материалов и мебели</li></ul>
+    </article>
+    <article class="pkg pkg--main" data-fade>
+      <p class="pkg__name">Дизайн + ремонт</p>
+      <p class="muted pkg__for">Самый частый выбор</p>
+      <ul><li>Всё из дизайн-проекта</li><li>Смета и график работ</li><li>Ремонт нашей командой</li><li>Авторский надзор архитектора</li></ul>
+    </article>
+    <article class="pkg" data-fade>
+      <p class="pkg__name">Под ключ с мебелью</p>
+      <p class="muted pkg__for">Заезжаете в готовый дом</p>
+      <ul><li>Всё из «Дизайн + ремонт»</li><li>Закупка мебели, света и декора</li><li>Доставка и сборка</li><li>Финальная расстановка и съёмка</li></ul>
+    </article>
+  </section>
+
+  <section class="section" id="calc">
+    <div class="sec-head"><h2 class="h2" data-fade>Калькулятор <span class="it">стоимости</span></h2></div>
+    <div class="calc">
+      <div class="calc__form">
+        <div class="field"><span class="label">Формат</span><div class="seg" id="pkgSeg" role="group" aria-label="Формат работы"></div></div>
+        <div class="field">
+          <label for="area">Площадь объекта</label>
+          <div class="range-row"><input type="range" id="area" min="30" max="600" step="5" value="120"><output id="areaOut" for="area">120 м²</output></div>
+        </div>
+      </div>
+      <div class="calc__out" aria-live="polite">
+        <p class="label" id="sumName"></p>
+        <p class="calc__sum" id="sum"></p>
+        <p id="sumTerm"></p>
+        <p class="calc__note">Ориентировочная оценка. Точная смета — после замера и обсуждения материалов.</p>
+        <div><a class="btn" id="sendCalc" href="contacts.html">Отправить расчёт</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><h2 class="h2" data-fade>Этапы <span class="it">работы</span></h2></div>
+    <div class="steps" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="step" data-fade><b>Встреча и замер</b><span>Знакомимся, обсуждаем задачу и бюджет, выезжаем на объект.</span></div>
+      <div class="step" data-fade><b>Планировка</b><span>Несколько вариантов расстановки и зонирования на выбор.</span></div>
+      <div class="step" data-fade><b>Концепция и 3D</b><span>Стиль, материалы и визуализации каждого помещения.</span></div>
+      <div class="step" data-fade><b>Чертежи и смета</b><span>Полный комплект для стройки и точная стоимость.</span></div>
+      <div class="step" data-fade><b>Ремонт</b><span>Работаем по графику, показываем прогресс.</span></div>
+      <div class="step" data-fade><b>Сдача</b><span>Проверяем каждую деталь и передаём ключи.</span></div>
+    </div>
+  </section>
+
+  <section class="section grid faq-grid">
+    <h2 class="h2" data-fade>Частые <span class="it">вопросы</span></h2>
+    <div class="faq">
+      <details><summary>Можно заказать только дизайн-проект?</summary><p>Да. Вы получите полный комплект чертежей и ведомость материалов, по которым сможет работать любая бригада. Авторский надзор можно добавить отдельно.</p></details>
+      <details><summary>От чего зависит итоговая цена?</summary><p>От площади, сложности планировки и выбранных материалов. Калькулятор показывает ориентир, точную смету мы составляем после замера.</p></details>
+      <details><summary>Работаете ли вы за пределами Ташкента?</summary><p>Да, обсуждаем выезд и формат надзора индивидуально — напишите нам, где находится объект.</p></details>
+      <details><summary>Сколько длится проект?</summary><p>Дизайн-проект квартиры обычно занимает от одного до двух месяцев, ремонт — от нескольких месяцев в зависимости от площади. Сроки фиксируем в договоре.</p></details>
+      <details><summary>Как начать?</summary><p>Оставьте заявку или позвоните — договоримся о встрече и выезде на объект.</p></details>
+    </div>
+  </section>
+</main>
+
+<section class="cta">
+  <div class="cta__row">
+    <h2 class="h2">Обсудим ваш <span class="it">объект</span></h2>
+    <div class="cta__links"><a class="btn" href="contacts.html">Оставить заявку</a><a class="btn btn--ghost" href="tel:+998915251615">Позвонить</a></div>
+  </div>
+</section>
+<div data-footer></div>
+<script src="assets/js/data.js?v=2"></script>
+<script src="assets/js/site.js?v=2"></script>
+</body>
+</html>

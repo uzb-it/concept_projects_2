@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Проект — Concept Projects</title>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500&family=Spectral:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
+</head>
+<body data-page="project">
+<div data-header></div>
+
+<main class="wrap">
+  <section class="case-head grid">
+    <div class="case-head__text">
+      <div class="crumbs" style="margin:0"><a href="index.html">Главная</a><span>/</span><a href="projects.html">Проекты</a><span>/</span><span id="crumb"></span></div>
+      <div>
+        <p class="label" id="cat" style="margin-bottom:12px"></p>
+        <h1 class="display" id="title"></h1>
+      </div>
+      <dl class="specs" id="specs" style="margin:0"></dl>
+    </div>
+    <div class="case-head__img"><div class="ph ph--4x5" id="heroImg" style="cursor:zoom-in"></div></div>
+  </section>
+
+  <section class="section grid case-story">
+    <p class="label case-story__label" data-fade>О проекте</p>
+    <p class="case-story__text" id="desc" data-fade></p>
+    <ul class="materials" id="materials" aria-label="Материалы"></ul>
+  </section>
+
+  <section class="section grid details" id="details" aria-label="Детали"></section>
+
+  <nav class="pager" id="pager" aria-label="Другие проекты"></nav>
+</main>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Фото"><img alt=""></div>
+
+<section class="cta">
+  <div class="cta__row">
+    <h2 class="h2">Хотите похожий <span class="it">интерьер?</span></h2>
+    <div class="cta__links"><a class="btn" href="contacts.html">Обсудить проект</a><a class="btn btn--ghost" href="projects.html">Все проекты</a></div>
+  </div>
+</section>
+<div data-footer></div>
+<script src="assets/js/data.js?v=2"></script>
+<script src="assets/js/site.js?v=2"></script>
+</body>
+</html>
