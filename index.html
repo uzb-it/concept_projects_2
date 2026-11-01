@@ -9,7 +9,7 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500&family=Prata&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=19">
+<link rel="stylesheet" href="assets/css/style.css?v=20">
 <script>document.documentElement.classList.add("js");setTimeout(function(){if(!window.CP_READY)document.documentElement.classList.add("reveal-all")},3000)</script>
 </head>
 <body data-page="home">
@@ -56,7 +56,7 @@
 
   <section class="section wrap">
     <div class="sec-head">
-      <h2 class="h2" data-lines>Избранные <span class="it">проекты</span></h2>
+      <h2 class="h2" data-eyebrow="Портфолио" data-lines>Избранные <span class="it">проекты</span></h2>
       <a class="arrow" href="projects.html" id="allCount">Все проекты (12)</a>
     </div>
     <div class="featured grid" id="featured"></div>
@@ -64,35 +64,40 @@
 
   <section class="index-sec">
     <div class="wrap">
-      <div class="sec-head"><h2 class="h2" data-lines>Индекс <span class="it">работ</span></h2><span class="label" id="indexMeta"></span></div>
+      <div class="sec-head"><h2 class="h2" data-eyebrow="Все работы" data-lines>Индекс <span class="it">работ</span></h2><span class="label" id="indexMeta"></span></div>
       <div class="index" id="index"></div>
     </div>
   </section>
 
   <section class="section wrap grid mats">
     <div class="mats__head">
-      <h2 class="h2" data-lines>Материалы, с&nbsp;которыми <span class="it">мы работаем</span></h2>
+      <h2 class="h2" data-eyebrow="Каталог" data-lines>Материалы, с&nbsp;которыми <span class="it">мы работаем</span></h2>
       <p class="lead" data-fade>Наведите на материал — покажем, где он уже живёт. Нажмите — откроем эти проекты.</p>
     </div>
     <div class="mats__list" id="mats"></div>
   </section>
 
-  <section class="section wrap grid founder">
-    <div class="founder__img" style="max-width:240px"><div class="ph ph--1x1" data-reveal><img src="assets/img/owner.jpg" alt="Умар Рахимов"></div></div>
-    <div class="founder__text">
-      <p class="label" data-fade>Основатель и главный архитектор</p>
-      <h2 class="h2" data-lines>Умар Рахимов</h2>
-      <p class="lead" data-fade>Ведёт каждый проект лично — от первой встречи до сдачи объекта.</p>
-      <div class="facts" data-fade>
-        <div><b>518 тыс.</b><span>подписчиков в Instagram</span></div>
-        <div><b>4 этапа</b><span>под одной ответственностью</span></div>
+  <section class="founder-sec">
+    <div class="founder-card wrap">
+      <div class="founder__portrait" data-fade><img src="assets/img/owner.jpg" alt="Умар Рахимов"></div>
+      <div class="founder__body">
+        <p class="eyebrow" data-fade>Основатель и главный архитектор</p>
+        <h2 class="h2" data-lines>Умар Рахимов</h2>
+        <p class="lead" data-fade>Ведёт каждый проект лично — от первой встречи до сдачи объекта.</p>
+        <div class="facts" data-fade>
+          <div><b>518 тыс.</b><span>подписчиков в Instagram</span></div>
+          <div><b>4 этапа</b><span>под одной ответственностью</span></div>
+        </div>
+        <div class="founder__links">
+          <a class="btn btn--gold" href="studio.html">О студии</a>
+          <a class="btn btn--line" href="https://www.instagram.com/umar_concept_/" target="_blank" rel="noopener">Instagram ↗</a>
+        </div>
       </div>
-      <a class="arrow" href="studio.html">О студии</a>
     </div>
   </section>
 
   <section class="section wrap">
-    <div class="sec-head"><h2 class="h2" data-lines>Как мы <span class="it">работаем</span></h2><a class="arrow" href="services.html">Услуги и цены</a></div>
+    <div class="sec-head"><h2 class="h2" data-eyebrow="Метод" data-lines>Как мы <span class="it">работаем</span></h2><a class="arrow" href="services.html">Услуги и цены</a></div>
     <div class="steps">
       <div class="step" data-fade><b>Знакомство и замер</b><span>Обсуждаем задачу, бюджет и сроки, выезжаем на объект.</span></div>
       <div class="step" data-fade><b>Планировка и концепция</b><span>Несколько вариантов планировки и стиль будущего интерьера.</span></div>
@@ -114,7 +119,7 @@
 
 <div class="peek" id="peek" aria-hidden="true"><div class="ph ph--4x5"><img alt=""></div></div>
 <div data-footer></div>
-<script src="assets/js/data.js?v=19"></script>
-<script src="assets/js/site.js?v=19"></script>
+<script src="assets/js/data.js?v=20"></script>
+<script src="assets/js/site.js?v=20"></script>
 </body>
 </html>

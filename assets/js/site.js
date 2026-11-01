@@ -395,6 +395,9 @@
     par.forEach(el => el.removeAttribute('data-parallax')); // full-size photo, no extra crop
   }
 
+  // closing invitations carry the mark, centred like a letterhead
+  $$('.cta').forEach(c => c.insertAdjacentHTML('afterbegin', '<svg class="cta__mark" aria-hidden="true"><use href="#mark"/></svg>'));
+
   window.CP_READY = true;
   // run right away (timers can be throttled in background tabs); with the intro, wait until it opens
   if (!$('.splash')) reveal();
