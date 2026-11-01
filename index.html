@@ -3,39 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#f2eadf">
+<meta name="theme-color" content="#0e3022">
 <title>Concept Projects — архитектура и дизайн интерьера, Ташкент</title>
 <meta name="description" content="Concept Projects: архитектура, дизайн интерьера, ремонт и авторский надзор в Ташкенте.">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500&family=Spectral:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=11">
+<link rel="stylesheet" href="assets/css/style.css?v=17">
 <script>document.documentElement.classList.add("js");setTimeout(function(){if(!window.CP_READY)document.documentElement.classList.add("reveal-all")},3000)</script>
 </head>
 <body data-page="home">
 <div data-header></div>
 
 <main>
-  <section class="hero wrap grid">
-    <div class="hero__text">
-      <h1 class="display" data-lines>Проектируем и строим <span class="it">интерьеры</span>, в&nbsp;которых хочется жить</h1>
-      <div class="hero__bottom">
-        <p class="lead">Архитектура, дизайн, ремонт и авторский надзор — в одних руках, от замера до последней лампы.</p>
-        <div class="hero__actions">
-          <a class="btn" href="projects.html">Смотреть проекты</a>
-          <a class="btn btn--ghost" href="services.html#calc">Рассчитать стоимость</a>
+  <section class="hero" aria-label="Проекты Concept Projects">
+    <a class="slides" id="slides" href="projects.html" aria-label="Открыть проект"></a>
+    <div class="hero__shade" aria-hidden="true"></div>
+    <div class="hero__inner wrap">
+      <h1 class="display" data-lines>Проектируем и строим <span class="nb"><span class="it">интерьеры</span>,</span> в&nbsp;которых хочется жить</h1>
+      <div class="hero__row">
+        <div class="hero__bottom">
+          <p class="lead">Архитектура, дизайн, ремонт и авторский надзор — в одних руках, от замера до последней лампы.</p>
+          <div class="hero__actions">
+            <a class="btn btn--gold" href="projects.html">Смотреть проекты</a>
+            <a class="btn btn--line" href="services.html#calc">Рассчитать стоимость</a>
+          </div>
         </div>
-        <div class="thumbs" id="thumbs" role="tablist" aria-label="Проекты на первом экране"></div>
+        <div class="hero__ctrl">
+          <div class="slides__bar">
+            <span class="slides__count"><b id="slideIdx">01</b> / <span id="slideTotal">05</span></span>
+            <span class="slides__name" id="slideName"></span>
+            <span class="slides__nav"><button type="button" id="slidePrev" aria-label="Предыдущий">←</button><button type="button" id="slideNext" aria-label="Следующий">→</button></span>
+          </div>
+          <div class="slides__progress"><i id="slideProgress"></i></div>
+          <div class="thumbs" id="thumbs" role="tablist" aria-label="Проекты на первом экране"></div>
+        </div>
       </div>
-    </div>
-    <div class="hero__main">
-      <a class="slides" id="slides" href="projects.html" aria-live="polite"></a>
-      <div class="slides__bar">
-        <span class="slides__count"><b id="slideIdx">01</b> / <span id="slideTotal">05</span></span>
-        <span class="slides__name" id="slideName"></span>
-        <span class="slides__nav"><button type="button" id="slidePrev" aria-label="Предыдущий">←</button><button type="button" id="slideNext" aria-label="Следующий">→</button></span>
-      </div>
-      <div class="slides__progress"><i id="slideProgress"></i></div>
     </div>
   </section>
 
@@ -110,7 +113,7 @@
 
 <div class="peek" id="peek" aria-hidden="true"><div class="ph ph--4x5"><img alt=""></div></div>
 <div data-footer></div>
-<script src="assets/js/data.js?v=11"></script>
-<script src="assets/js/site.js?v=11"></script>
+<script src="assets/js/data.js?v=17"></script>
+<script src="assets/js/site.js?v=17"></script>
 </body>
 </html>

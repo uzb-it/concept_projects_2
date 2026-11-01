@@ -136,9 +136,9 @@
     $('#thumbs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) goAndReset($$('#thumbs button').indexOf(b)); });
     // timer: pauses while a mouse hovers the photo, while the tab is hidden and while the hero is off screen
     let hover = false, heroOn = true, elapsed = 0, last = performance.now();
-    const heroMain = $('.hero__main');
-    heroMain.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
-    heroMain.addEventListener('pointerleave', () => { hover = false; });
+    const heroMain = $('.hero'), ctrl = $('.hero__ctrl');
+    ctrl.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
+    ctrl.addEventListener('pointerleave', () => { hover = false; });
     const goAndReset = k => { go(k); elapsed = 0; };
     $('#slidePrev').onclick = () => goAndReset(cur - 1);
     $('#slideNext').onclick = () => goAndReset(cur + 1);
