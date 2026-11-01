@@ -35,12 +35,14 @@
 
   /* ---------------- header, menu, footer ---------------- */
   const NAV = [['projects', 'projects.html', 'Проекты'], ['studio', 'studio.html', 'Студия'], ['services', 'services.html', 'Услуги и цены'], ['contacts', 'contacts.html', 'Контакты']];
-  const navLinks = NAV.map(([k, href, t]) => `<a href="${href}"${k === page || (k === 'projects' && page === 'project') ? ' aria-current="page"' : ''}>${t}</a>`).join('');
+  const link = ([k, href, t]) => `<a href="${href}"${k === page || (k === 'projects' && page === 'project') ? ' aria-current="page"' : ''}>${t}</a>`;
+  const navLinks = NAV.map(link).join('');
+  // jewellery-house layout: menu split around a centred logo
   $('[data-header]').outerHTML = `
     <header class="header">
-      <a class="brand" href="index.html" aria-label="Concept Projects — на главную"><svg><use href="#mark"/></svg>Concept Projects</a>
-      <nav class="nav" aria-label="Основное меню">${navLinks}</nav>
-      <a class="btn header__cta" href="contacts.html">Обсудить проект</a>
+      <nav class="nav nav--l" aria-label="Основное меню">${NAV.slice(0, 2).map(link).join('')}</nav>
+      <a class="brand" href="index.html" aria-label="Concept Projects — на главную"><svg><use href="#mark"/></svg><span>Concept Projects</span></a>
+      <nav class="nav nav--r" aria-label="Разделы">${NAV.slice(2).map(link).join('')}<a class="nav__tel" href="${tel(SITE.phones[0])}">${SITE.phones[0]}</a></nav>
       <button class="burger" aria-label="Меню" aria-expanded="false"><i></i><i></i></button>
     </header>
     <div class="menu" id="menu">
@@ -127,11 +129,11 @@
       els[cur].classList.add('is-on');
       $$('#thumbs button').forEach((b, j) => b.classList.toggle('is-on', j === cur));
       $('#slideIdx').textContent = pad2(cur + 1);
-      $('#slideName').textContent = `${SHOW[cur].name} — ${SHOW[cur].cat.toLowerCase()}, ${SHOW[cur].year}`;
+      $('#slideName').textContent = SHOW[cur].name;
       slides.href = `project.html?p=${SHOW[cur].slug}`;
       t0 = performance.now();
     };
-    $('#slideName').textContent = `${SHOW[0].name} — ${SHOW[0].cat.toLowerCase()}, ${SHOW[0].year}`;
+    $('#slideName').textContent = SHOW[0].name;
     slides.href = `project.html?p=${SHOW[0].slug}`;
     $('#thumbs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) goAndReset($$('#thumbs button').indexOf(b)); });
     // timer: pauses while a mouse hovers the photo, while the tab is hidden and while the hero is off screen
